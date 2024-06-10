@@ -1,12 +1,16 @@
-import Arc53CreateFileButton from "@/components/buttons/create-arc53-file-button";
 import Arc53DataForm from "@/components/forms/arc53-data-form";
+import VerticalStepper from "@/components/steppers/vertical";
+import FormDisplayProvider from "@/providers/form-display";
 
 export default function Home() {
   return (
-    <div>
-      <h1>ARC53 METADATA BUILDER</h1>
-      <Arc53DataForm />
-      <Arc53CreateFileButton />
-    </div>
+    <FormDisplayProvider>
+      <div className="p-4">
+        <VerticalStepper />
+        <div className="pl-80 pt-12 h-full w-full">
+          <Arc53DataForm />
+        </div>
+      </div>
+    </FormDisplayProvider>
   );
 }

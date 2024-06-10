@@ -13,6 +13,10 @@ const config: Config = {
         "gradient-conic":
           "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
       },
+      colors: {
+        'akita-purple': '#9439e6',
+        'akita-purple-dark': '#7e2fcb',
+      }
     },
   },
 	plugins: [
