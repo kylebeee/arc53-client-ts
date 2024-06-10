@@ -34,7 +34,7 @@ export default function Arc53DataForm() {
       {/* create an infinite size input list for the token info */}
       <section className={cn((formProgress !== ARC53FormProgress.token) ? 'hidden' : '')}>
         <label className="font-bold">Tokens</label>
-
+ 
         {
           tokensList.map((key) => (
             <div key={key} className="w-full my-4 flex gap-2">
@@ -124,7 +124,7 @@ export default function Arc53DataForm() {
                     </h3>
 
                     <p className="text-zinc-400">
-                      Lets you communicate which Algorand Standard Assets (ASA's) a consuming dapp should include in the collection. Prefixes, Addresses & Excluded Assets all scope the collection down using your verified creator addresses while the assets list expands it incase any parts of the collection are not covered by the other scoping methods.
+                      Lets you communicate which Algorand Standard Assets (ASA&apos;s) a consuming dapp should include in the collection. Prefixes, Addresses & Excluded Assets all scope the collection down using your verified creator addresses while the assets list expands it incase any parts of the collection are not covered by the other scoping methods.
                     </p>
 
                     <p className="text-zinc-400">
@@ -194,7 +194,7 @@ export default function Arc53DataForm() {
 
         {
           extrasList.map((key) => (
-            <div className="w-full">
+            <div key={key} className="w-full">
               <div className="w-full h-0 flex justify-end">
                 <button
                   className="block p-2 mt-4 h-10 bg-zinc-900 hover:bg-red-600 text-white rounded-md"
