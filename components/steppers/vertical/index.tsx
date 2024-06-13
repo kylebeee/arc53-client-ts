@@ -1,10 +1,11 @@
 'use client'
 
-import CheckIcon from "@/components/icons/check"
+
 import { cn } from "@/functions/tailwind"
 import { useContext } from "react"
 import { Context as FormDisplayContext } from "@/providers/form-display"
 import { ARC53FormProgress } from "@/types/form"
+import { CheckIcon } from "@heroicons/react/20/solid"
 
 const steps = [
   {
@@ -34,12 +35,12 @@ const steps = [
   }
 ];
 
-export default function VerticalStepper() {
+export default function VerticalStepper({ className }: { className?: string }) {
   const { state: formProgress, setState: setFormProgress } = useContext(FormDisplayContext);
   const stateIndex = steps.findIndex(step => step.id === formProgress);
 
   return (
-    <nav className="h-full fixed max-w-80" aria-label="Progress">
+    <nav className={cn(!!className ? className : '', "h-full fixed max-w-80")} aria-label="Progress">
       <h1 className="text-4xl font-extrabold">ARC53 BUILDER</h1>
       <ol role="list" className="pt-2 overflow-hidden">
         {steps.map((step, stepIdx) => (

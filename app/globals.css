@@ -67,7 +67,7 @@ input:focus,
 input:focus-within,
 input:focus-visible {
 	/* outline: unset; */
-	border: unset;
+	/* border: unset; */
 	border-color: unset;
 	box-shadow: unset !important;
 }

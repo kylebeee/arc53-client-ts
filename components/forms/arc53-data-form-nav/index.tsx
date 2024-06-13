@@ -9,7 +9,7 @@ export default function Arc53DataFormNav() {
   const { state: formProgress, setState: setFormProgress } = useContext(FormDisplayContext);
 
   return (
-    <div className="bg-black flex justify-end gap-2">
+    <div className="bg-black flex justify-end gap-2 pb-4">
       {
         (() => {
           switch (formProgress) {

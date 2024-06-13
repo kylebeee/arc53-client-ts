@@ -1,6 +1,7 @@
 'use client'
 
-import XMarkIcon from "@/components/icons/x-mark";
+
+import { XMarkIcon } from "@heroicons/react/20/solid";
 import { useState } from "react";
 
 export default function CollectionPrefixForm({ className }: { className?: string }) {
@@ -10,7 +11,7 @@ export default function CollectionPrefixForm({ className }: { className?: string
 	return (
 		<div className={className}>
 			<input
-				className="bg-gradient-to-r from-zinc-900 to-akita-purple to-[500%] rounded-md w-60"
+				className="bg-gradient-to-r from-zinc-900 to-akita-purple to-[500%] border-zinc-900 focus:border-zinc-900 rounded-md w-60"
 				type="text"
 				placeholder="Prefixes"
 				onKeyDown={(e) => {
@@ -36,7 +37,7 @@ export default function CollectionPrefixForm({ className }: { className?: string
 								className="p-1 text-zinc-600 rounded-md hover:bg-black hover:text-white"
 								onClick={() => setPrefixes(p => p.filter((_, i) => i !== index))}
 							>
-								<XMarkIcon />
+								<XMarkIcon className="size-6" />
 							</button>
 							<p className="py-1 pl-1 pr-2 uppercase">{prefix}</p>
 						</div>

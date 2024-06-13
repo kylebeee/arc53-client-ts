@@ -2,8 +2,8 @@
 
 import { useState } from "react"
 import CollectionTraitValueForm from "../collection-trait-value-form"
-import XMarkIcon from "@/components/icons/x-mark"
 import uuid from "@/functions/random"
+import { XMarkIcon } from "@heroicons/react/20/solid"
 
 export default function CollectionTraitsForm() {
   const [traitsList, setTraitsList] = useState<string[]>([])
@@ -23,12 +23,12 @@ export default function CollectionTraitsForm() {
                   type="button"
                   onClick={() => setTraitsList(ttl => ttl.filter((k: string) => k !== traitKey))}
                 >
-                  <XMarkIcon />
+                  <XMarkIcon className="size-6" />
                 </button>
               </div>
 
               <div className="w-full my-4 flex flex-col gap-2">
-                <input className="bg-zinc-900 rounded-md w-60" type="text" placeholder="Trait Name" />
+                <input className="bg-zinc-900 border-zinc-900 focus:border-zinc-900 rounded-md w-60" type="text" placeholder="Trait Name" />
                 <CollectionTraitValueForm key={`collection-trait-value-${traitKey}`} className="w-full" />
               </div>
             </div>
