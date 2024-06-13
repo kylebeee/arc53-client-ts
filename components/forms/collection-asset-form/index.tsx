@@ -5,11 +5,12 @@ import { XMarkIcon } from "@heroicons/react/20/solid";
 import { useState } from "react";
 
 export interface CollectionAssetFormProps {
+	id: string;
 	className?: string;
 	placeholder?: string;
 }
 
-export default function CollectionAssetForm({ className, placeholder = "Add Assets" }: CollectionAssetFormProps) {
+export default function CollectionAssetForm({ id, className, placeholder = "Add Assets" }: CollectionAssetFormProps) {
 	const [inputValue, setInputValue] = useState("");
 	const [assets, setAssets] = useState<string[]>([]);
 
@@ -36,6 +37,8 @@ export default function CollectionAssetForm({ className, placeholder = "Add Asse
                 }}
 				value={inputValue}
 			/>
+
+			<input id={id} type="text" onChange={() => {}} value={assets.join('|||')} className="hidden" />
 
 			<div className="w-full min-h-[calc(3rem+4px)] flex flex-wrap gap-2 mt-2 p-1 bg-black border-2 border-zinc-800 rounded-lg">
 				{

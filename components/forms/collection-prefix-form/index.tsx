@@ -4,7 +4,7 @@
 import { XMarkIcon } from "@heroicons/react/20/solid";
 import { useState } from "react";
 
-export default function CollectionPrefixForm({ className }: { className?: string }) {
+export default function CollectionPrefixForm({ id, className }: { id: string, className?: string }) {
 	const [inputValue, setInputValue] = useState("");
 	const [prefixes, setPrefixes] = useState<string[]>([]);
 
@@ -27,6 +27,8 @@ export default function CollectionPrefixForm({ className }: { className?: string
 				onChange={(e) => setInputValue(e.target.value.toUpperCase())}
 				value={inputValue}
 			/>
+
+			<input id={id} type="text" onChange={() => {}} value={prefixes.join('|||')} className="hidden" />
 
 			<div className="w-full min-h-[calc(3rem+4px)] flex flex-wrap gap-2 mt-2 p-1 bg-black border-2 border-zinc-800 rounded-lg">
 				{

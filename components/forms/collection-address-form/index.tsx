@@ -5,11 +5,12 @@ import { XMarkIcon } from "@heroicons/react/20/solid";
 import { useState } from "react";
 
 export interface CollectionAddressFormProps {
+	id: string;
 	className?: string;
 	placeholder?: string;
 }
 
-export default function CollectionAddressForm({ className, placeholder = 'Add Addresses' }: CollectionAddressFormProps) {
+export default function CollectionAddressForm({ id, className, placeholder = 'Add Addresses' }: CollectionAddressFormProps) {
 	const {refs, floatingStyles} = useFloating({ placement: 'top-start' });
 
 	const [inputValue, setInputValue] = useState("");
@@ -49,6 +50,8 @@ export default function CollectionAddressForm({ className, placeholder = 'Add Ad
 				onChange={(e) => setInputValue(e.target.value.toUpperCase())}
 				value={inputValue}
 			/>
+
+			<input id={id} type="text" onChange={() => {}} value={addresses.join('|||')} className="hidden" />
 
 			<div className="w-full min-h-[calc(3rem+4px)] flex flex-wrap gap-2 mt-2 p-1 bg-black border-2 border-zinc-800 rounded-lg overflow-hidden">
 				{

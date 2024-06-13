@@ -13,7 +13,13 @@ const allowedMimeTypes = [
     'image/svg+xml',
 ]
 
-export default function ImageCIDForm({ id }: { id: string }) {
+export interface ImageCIDFormProps {
+    cidInputID: string;
+    integrityInputID: string;
+    mimeInputID: string;
+}
+
+export default function ImageCIDForm({ cidInputID, integrityInputID, mimeInputID }: ImageCIDFormProps) {
     const {refs, floatingStyles} = useFloating({ placement: 'top-start' });
     
     const [error , setError] = useState<string>('');
@@ -35,7 +41,7 @@ export default function ImageCIDForm({ id }: { id: string }) {
             }
             
             <input
-                id={`image-cid-${id}`}
+                id={cidInputID}
                 ref={refs.setReference}
                 className={cn(!!error ? 'border-red-600' : 'border-zinc-900 ', "border focus:border-zinc-900 bg-zinc-900 rounded-md w-full md:w-[40rem]")}
                 type="text"
@@ -65,14 +71,14 @@ export default function ImageCIDForm({ id }: { id: string }) {
                 }}
             />
             <input
-                id={`image-cid-integrity-${id}`}
+                id={integrityInputID}
                 className="hidden bg-zinc-900 rounded-md"
                 type="text"
                 onChange={() => {}}
                 value={integrity}
             />
             <input
-                id={`image-cid-mime-${id}`}
+                id={mimeInputID}
                 className="hidden bg-zinc-900 rounded-md"
                 type="text"
                 onChange={() => {}}

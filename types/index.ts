@@ -1,9 +1,10 @@
 export interface Arc53 {
     version:     string;
-    tokens:      Token[];
-    associates:  Associate[];
-    collections: Collection[];
-    faq:         FAQ[];
+    tokens?:      Token[];
+    associates?:  Associate[];
+    collections?: Collection[];
+    faq?:         FAQ[];
+    extras?:      Extra[];
 }
 
 export interface Token {
@@ -20,17 +21,17 @@ export interface Associate {
 
 export interface Collection {
     name:            string;
-    prefixes:        string[];
-    addresses:       string[];
-    assets:          any[];
-    excluded_assets: any[];
-    description:     string;
+    avatar?:          number;
     banner?:         number;
-    avatar:          number;
-    network?:        string;
-    artists:         string[];
+    description?:     string;
+    prefixes?:        string[];
+    addresses?:       string[];
+    assets?:          any[];
+    excluded_assets?: any[];
+    network:        string;
+    artists?:         string[];
     explicit:        boolean;
-    properties:      Property[];
+    properties?:      Property[];
 }
 
 export interface Property {
@@ -48,4 +49,9 @@ export interface PropertyValue {
 export interface FAQ {
     q: string;
     a: string;
+}
+
+export interface Extra {
+    key:   string;
+    value: string;
 }

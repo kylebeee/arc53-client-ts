@@ -3,8 +3,15 @@
 import { XMarkIcon } from "@heroicons/react/20/solid";
 import { useState } from "react";
 import ImageCIDForm from "../image-cid-form";
+import { FormInputID, getInputID } from "@/types/form";
 
-export default function CollectionTraitValueForm({ className }: { className?: string }) {
+export interface CollectionTraitValueFormProps {
+	id: string;
+	traitKey: string;
+	className?: string;
+}
+
+export default function CollectionTraitValueForm({ id, traitKey, className }: CollectionTraitValueFormProps) {
 	const [inputValue, setInputValue] = useState("");
 	const [traitValues, setTraitValues] = useState<string[]>([]);
 
@@ -28,6 +35,9 @@ export default function CollectionTraitValueForm({ className }: { className?: st
 				value={inputValue}
 			/>
 
+			{/* the value lists are themselves forms keyed by the trait name so this input is just to be able to easily fetch the names we need to iterate over */}
+			<input id={getInputID(FormInputID.CollectionTraitValueList, `${traitKey}-${id}`)} type="text" onChange={() => {}} value={traitValues.join('|||')} className="hidden" />
+
 			<div className="w-full min-h-[calc(3rem+4px)] flex flex-wrap gap-2 mt-2 p-1 bg-black border-2 border-zinc-800 rounded-lg">
 				{
 					traitValues.map((traitValue, index) => (
@@ -45,7 +55,14 @@ export default function CollectionTraitValueForm({ className }: { className?: st
 							</div>
 
 							<div className="w-full mt-1 p-0.5 bg-black rounded-lg">
-								<ImageCIDForm id={`${index}`} />
+
+								<input id={getInputID(FormInputID.CollectionTraitValue, `${traitValue}-${traitKey}-${id}`)} type="text" onChange={() => {}} value={traitValue} className="hidden" />
+
+								<ImageCIDForm
+									cidInputID={getInputID(FormInputID.CollectionTraitValueImage, `${traitValue}-${traitKey}-${id}`)}
+									integrityInputID={getInputID(FormInputID.CollectionTraitValueImageIntegrity, `${traitValue}-${traitKey}-${id}`)}
+									mimeInputID={getInputID(FormInputID.CollectionTraitValueImageMimeType, `${traitValue}-${traitKey}-${id}`)}
+								/>
 							</div>
 						</div>
 					))
