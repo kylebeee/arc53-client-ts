@@ -175,7 +175,7 @@ export default function Arc53DataForm() {
                   <input id={getInputID(FormInputID.CollectionBanner, key)} className="bg-zinc-900 border-zinc-900 focus:border-zinc-900 rounded-md" type="text" placeholder="Banner Asset ID" />
                   <input id={getInputID(FormInputID.CollectionAvatar, key)} className="bg-zinc-900 border-zinc-900 focus:border-zinc-900 rounded-md" type="text" placeholder="Avatar Asset ID" />
 
-                  <textarea id={getInputID(FormInputID.CollectionDescription, key)} className="bg-zinc-900 border-zinc-900 focus:border-zinc-900 rounded-md min-h-40 w-[47.5rem]" placeholder="Description" />
+                  <textarea id={getInputID(FormInputID.CollectionDescription, key)} className="bg-zinc-900 border-zinc-900 focus:border-zinc-900 rounded-md min-h-40 w-[47.5rem] 2xl:w-[60rem]" placeholder="Description" />
 
                   <div className="w-full py-2 flex flex-col gap-4">
                     <h3 className="block">
