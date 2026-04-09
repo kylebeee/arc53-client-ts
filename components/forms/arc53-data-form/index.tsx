@@ -1,6 +1,6 @@
 'use client'
 
-import { useContext, useState } from "react"
+import { useContext, useEffect, useState } from "react"
 import CollectionPrefixForm from "../collection-prefix-form";
 import CollectionAddressForm from "../collection-address-form";
 import CollectionAssetForm from "../collection-asset-form";
@@ -12,12 +12,14 @@ import Arc53DataFormNav from "../arc53-data-form-nav";
 import uuid from "@/functions/random";
 import ImageCIDForm from "../image-cid-form";
 import { XMarkIcon } from "@heroicons/react/20/solid";
-import { getFormCollectionData, getFormExtraData, getFormFAQData, getFormTeamMemberData, getFormTokenData } from "@/functions/form";
+import { buildArc53Payload } from "@/functions/form";
 import CollectionTraitValueForm from "../collection-trait-value-form";
-import { Arc53, Associate, Collection, Extra, FAQ, Token } from "@/types";
+import { Arc53DataContext } from "@/providers/arc53-data";
+import { buildFormStateFromArc53, FormInitialState } from "@/functions/arc53-prefill";
 
 export default function Arc53DataForm() {
   const { state: formProgress, setState: setFormProgress } = useContext(FormDisplayContext);
+  const { arc53Data } = useContext(Arc53DataContext);
 
   const [tokensList, setTokensList] = useState<string[]>([]);
   const tokensListLength = tokensList.length;
@@ -33,40 +35,43 @@ export default function Arc53DataForm() {
   const [extrasList, setExtrasList] = useState<string[]>([]);
   const extrasListLength = extrasList.length;
 
+  // Pre-fill state
+  const [formKey, setFormKey] = useState(0);
+  const [prefillState, setPrefillState] = useState<FormInitialState | null>(null);
+
+  // When ARC53 data loads from NFD, populate form
+  useEffect(() => {
+    if (!arc53Data) return;
+
+    const state = buildFormStateFromArc53(arc53Data);
+    setPrefillState(state);
+    setTokensList(state.tokensList);
+    setTeamMembersList(state.teamMembersList);
+    setCollectionsList(state.collectionsList);
+    setTraitsMap(state.traitsMap);
+    setFaqList(state.faqList);
+    setExtrasList(state.extrasList);
+    // Force re-mount of all inputs to apply defaultValues
+    setFormKey(k => k + 1);
+    // Reset to first step
+    setFormProgress(ARC53FormProgress.token);
+  }, [arc53Data, setFormProgress]);
+
+  // Helper to get default value for a field
+  const dv = (inputId: FormInputID, key: string): string | undefined => {
+    return prefillState?.defaultValues[key]?.[inputId];
+  }
+
+  // Helper to get default value using composite key (for traits)
+  const dvComposite = (inputId: FormInputID, compositeKey: string): string | undefined => {
+    return prefillState?.defaultValues[compositeKey]?.[inputId];
+  }
+
   return (
-    <form onSubmit={e => {
+    <form key={formKey} onSubmit={e => {
       e.preventDefault();
-      console.log('submitting form');
 
-      let payload: Arc53 = { version: '0.0.2' };
-
-      const tokens = tokensList.map(key => getFormTokenData(key)).filter(x => !!x);
-      if (tokens.length > 0) {
-        payload.tokens = (tokens as Token[]);
-      }
-
-      const teamMembers = teamMembersList.map(key => getFormTeamMemberData(key)).filter(x => !!x);
-      if (teamMembers.length > 0) {
-        payload.associates = (teamMembers as Associate[]);
-      }
-
-      const collections = collectionsList.map(key => getFormCollectionData(key, traitsMap)).filter(x => !!x);
-      if (collections.length > 0) {
-        payload.collections = (collections as Collection[]);
-      }
-
-      const faq = faqList.map(key => getFormFAQData(key)).filter(x => !!x);
-      if (faq.length > 0) {
-        payload.faq = (faq as FAQ[]);
-      }
-
-      const extras = extrasList.map(key => getFormExtraData(key)).filter(x => !!x);
-      console.log('extras', extras);
-      if (extras.length > 0) {
-        payload.extras = (extras as Extra[]);
-      }
-
-      console.log(payload);
+      const payload = buildArc53Payload(tokensList, teamMembersList, collectionsList, traitsMap, faqList, extrasList);
 
       const jsonFile = JSON.stringify(payload)
       const blob = new Blob([jsonFile], { type: 'application/json' });
@@ -94,12 +99,15 @@ export default function Arc53DataForm() {
                 </div>
 
 
-                <input id={getInputID(FormInputID.TokenAssetID, key)} className="bg-zinc-900 border-zinc-900 focus:border-zinc-900 rounded-md" type="text" placeholder="Asset ID" />
+                <input id={getInputID(FormInputID.TokenAssetID, key)} className="bg-zinc-900 border-zinc-900 focus:border-zinc-900 rounded-md" type="text" placeholder="Asset ID" defaultValue={dv(FormInputID.TokenAssetID, key)} />
 
                 <ImageCIDForm
                   cidInputID={getInputID(FormInputID.TokenImage, key)}
                   integrityInputID={getInputID(FormInputID.TokenImageIntegrity, key)}
                   mimeInputID={getInputID(FormInputID.TokenImageMimeType, key)}
+                  initialCID={dv(FormInputID.TokenImage, key)}
+                  initialIntegrity={dv(FormInputID.TokenImageIntegrity, key)}
+                  initialMime={dv(FormInputID.TokenImageMimeType, key)}
                 />
 
               </div>
@@ -133,9 +141,9 @@ export default function Arc53DataForm() {
                   </button>
                 </div>
 
-                <input id={getInputID(FormInputID.TeamMemberRole, key)} className="bg-zinc-900 border-zinc-900 focus:border-zinc-900 rounded-md md:w-96" type="text" placeholder="Role" />
+                <input id={getInputID(FormInputID.TeamMemberRole, key)} className="bg-zinc-900 border-zinc-900 focus:border-zinc-900 rounded-md md:w-96" type="text" placeholder="Role" defaultValue={dv(FormInputID.TeamMemberRole, key)} />
 
-                <input id={getInputID(FormInputID.TeamMemberAddress, key)} className="bg-zinc-900 border-zinc-900 focus:border-zinc-900 rounded-md w-full md:w-[42rem] text-ellipsis overflow-hidden" type="text" placeholder="Address" />
+                <input id={getInputID(FormInputID.TeamMemberAddress, key)} className="bg-zinc-900 border-zinc-900 focus:border-zinc-900 rounded-md w-full md:w-[42rem] text-ellipsis overflow-hidden" type="text" placeholder="Address" defaultValue={dv(FormInputID.TeamMemberAddress, key)} />
 
               </div>
             ))
@@ -170,12 +178,12 @@ export default function Arc53DataForm() {
 
                 <div className="w-full flex flex-wrap my-4 gap-4">
 
-                  <input id={getInputID(FormInputID.CollectionName, key)} className="bg-zinc-900 border-zinc-900 focus:border-zinc-900 rounded-md md:w-80" type="text" placeholder="Name" />
+                  <input id={getInputID(FormInputID.CollectionName, key)} className="bg-zinc-900 border-zinc-900 focus:border-zinc-900 rounded-md md:w-80" type="text" placeholder="Name" defaultValue={dv(FormInputID.CollectionName, key)} />
 
-                  <input id={getInputID(FormInputID.CollectionBanner, key)} className="bg-zinc-900 border-zinc-900 focus:border-zinc-900 rounded-md" type="text" placeholder="Banner Asset ID" />
-                  <input id={getInputID(FormInputID.CollectionAvatar, key)} className="bg-zinc-900 border-zinc-900 focus:border-zinc-900 rounded-md" type="text" placeholder="Avatar Asset ID" />
+                  <input id={getInputID(FormInputID.CollectionBanner, key)} className="bg-zinc-900 border-zinc-900 focus:border-zinc-900 rounded-md" type="text" placeholder="Banner Asset ID" defaultValue={dv(FormInputID.CollectionBanner, key)} />
+                  <input id={getInputID(FormInputID.CollectionAvatar, key)} className="bg-zinc-900 border-zinc-900 focus:border-zinc-900 rounded-md" type="text" placeholder="Avatar Asset ID" defaultValue={dv(FormInputID.CollectionAvatar, key)} />
 
-                  <textarea id={getInputID(FormInputID.CollectionDescription, key)} className="bg-zinc-900 border-zinc-900 focus:border-zinc-900 rounded-md min-h-40 w-[47.5rem] 2xl:w-[60rem]" placeholder="Description" />
+                  <textarea id={getInputID(FormInputID.CollectionDescription, key)} className="bg-zinc-900 border-zinc-900 focus:border-zinc-900 rounded-md min-h-40 w-[47.5rem] 2xl:w-[60rem]" placeholder="Description" defaultValue={dv(FormInputID.CollectionDescription, key)} />
 
                   <div className="w-full py-2 flex flex-col gap-4">
                     <h3 className="block">
@@ -190,16 +198,16 @@ export default function Arc53DataForm() {
                       Fields with <span className="text-akita-purple font-semibold">Purple</span> backgrounds are list inputs, hitting enter will add the value to the list.
                     </p>
 
-                    <CollectionPrefixForm id={getInputID(FormInputID.CollectionPrefixes, key)} className="w-full" />
-                    <CollectionAddressForm id={getInputID(FormInputID.CollectionAddresses, key)} className="w-full mt-2" />
-                    <CollectionAssetForm id={getInputID(FormInputID.CollectionAssets, key)} className="w-full mt-2" />
-                    <CollectionAssetForm id={getInputID(FormInputID.CollectionExcludedAssets, key)} className="w-full mt-2" placeholder="Add Excluded Assets" />
+                    <CollectionPrefixForm id={getInputID(FormInputID.CollectionPrefixes, key)} className="w-full" initialItems={prefillState?.initialLists[key]?.prefixes} />
+                    <CollectionAddressForm id={getInputID(FormInputID.CollectionAddresses, key)} className="w-full mt-2" initialItems={prefillState?.initialLists[key]?.addresses} />
+                    <CollectionAssetForm id={getInputID(FormInputID.CollectionAssets, key)} className="w-full mt-2" initialItems={prefillState?.initialLists[key]?.assets} />
+                    <CollectionAssetForm id={getInputID(FormInputID.CollectionExcludedAssets, key)} className="w-full mt-2" placeholder="Add Excluded Assets" initialItems={prefillState?.initialLists[key]?.excludedAssets} />
                   </div>
 
                   {/* Hide for now as the watcher is only for algorand atm */}
                   {/* <input className="bg-zinc-900 rounded-md" type="text" placeholder="Network" /> */}
 
-                  <CollectionAddressForm id={getInputID(FormInputID.CollectionArtists, key)} className="w-full mt-2" placeholder="Add Artist Addresses" />
+                  <CollectionAddressForm id={getInputID(FormInputID.CollectionArtists, key)} className="w-full mt-2" placeholder="Add Artist Addresses" initialItems={prefillState?.initialLists[key]?.artists} />
 
                   {/* create an infinite size input list for the property info */}
                   <div className="w-full mt-2">
@@ -226,8 +234,9 @@ export default function Arc53DataForm() {
                                 className="bg-zinc-900 border-zinc-900 focus:border-zinc-900 rounded-md w-60"
                                 type="text"
                                 placeholder="Trait Name"
+                                defaultValue={dvComposite(FormInputID.CollectionTraitName, `${traitKey}-${key}`)}
                               />
-                              <CollectionTraitValueForm id={key} traitKey={traitKey} className="w-full" />
+                              <CollectionTraitValueForm id={key} traitKey={traitKey} className="w-full" initialItems={prefillState?.initialLists[key]?.traitValues?.[traitKey]} />
                             </div>
                           </div>
                         ))
@@ -274,8 +283,8 @@ export default function Arc53DataForm() {
                 </div>
 
                 <div className="w-full my-4 flex flex-col gap-4">
-                  <textarea id={getInputID(FormInputID.FAQQuestion, key)} className="w-full md:w-[30rem] bg-zinc-900 border-zinc-900 focus:border-zinc-900 rounded-md" placeholder="Question" />
-                  <textarea id={getInputID(FormInputID.FAQAnswer, key)} className="w-full bg-zinc-900 border-zinc-900 focus:border-zinc-900 rounded-md" placeholder="Answer" />
+                  <textarea id={getInputID(FormInputID.FAQQuestion, key)} className="w-full md:w-[30rem] bg-zinc-900 border-zinc-900 focus:border-zinc-900 rounded-md" placeholder="Question" defaultValue={dv(FormInputID.FAQQuestion, key)} />
+                  <textarea id={getInputID(FormInputID.FAQAnswer, key)} className="w-full bg-zinc-900 border-zinc-900 focus:border-zinc-900 rounded-md" placeholder="Answer" defaultValue={dv(FormInputID.FAQAnswer, key)} />
                 </div>
 
               </div>
@@ -309,8 +318,8 @@ export default function Arc53DataForm() {
                 </div>
 
                 <div className="w-full my-4 flex flex-col gap-4">
-                  <input id={getInputID(FormInputID.ExtraKey, key)} className="bg-zinc-900 border-zinc-900 focus:border-zinc-900 rounded-md md:w-96" type="text" placeholder="Key" />
-                  <textarea id={getInputID(FormInputID.ExtraValue, key)} className="w-full bg-zinc-900 border-zinc-900 focus:border-zinc-900 rounded-md" placeholder="Value" />
+                  <input id={getInputID(FormInputID.ExtraKey, key)} className="bg-zinc-900 border-zinc-900 focus:border-zinc-900 rounded-md md:w-96" type="text" placeholder="Key" defaultValue={dv(FormInputID.ExtraKey, key)} />
+                  <textarea id={getInputID(FormInputID.ExtraValue, key)} className="w-full bg-zinc-900 border-zinc-900 focus:border-zinc-900 rounded-md" placeholder="Value" defaultValue={dv(FormInputID.ExtraValue, key)} />
                 </div>
               </div>
             ))
@@ -326,7 +335,7 @@ export default function Arc53DataForm() {
         </button>
       </section>
 
-      <Arc53DataFormNav />
+      <Arc53DataFormNav buildPayload={() => buildArc53Payload(tokensList, teamMembersList, collectionsList, traitsMap, faqList, extrasList)} />
     </form>
   )
 }

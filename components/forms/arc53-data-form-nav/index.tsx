@@ -4,8 +4,14 @@ import { useContext } from "react";
 import { Context as FormDisplayContext } from "@/providers/form-display"
 import { ARC53FormProgress, ARC53FormProgressOrder } from "@/types/form";
 import Arc53CreateFileButton from "@/components/buttons/create-arc53-file-button";
+import NFDUpdateFlow from "@/components/wallet/nfd-update-flow";
+import { Arc53 } from "@/types";
 
-export default function Arc53DataFormNav() {
+interface Arc53DataFormNavProps {
+  buildPayload: () => Arc53;
+}
+
+export default function Arc53DataFormNav({ buildPayload }: Arc53DataFormNavProps) {
   const { state: formProgress, setState: setFormProgress } = useContext(FormDisplayContext);
 
   return (
@@ -55,7 +61,7 @@ export default function Arc53DataFormNav() {
               )
             case ARC53FormProgress.extras:
               return (
-                <>
+                <div className="flex items-center gap-2">
                   <button
                     className="p-2 bg-akita-purple text-white rounded-md"
                     type="button"
@@ -67,7 +73,8 @@ export default function Arc53DataFormNav() {
                     Back
                   </button>
                   <Arc53CreateFileButton />
-                </>
+                  <NFDUpdateFlow buildPayload={buildPayload} />
+                </div>
               )
           }
         })()

@@ -4,9 +4,9 @@
 import { XMarkIcon } from "@heroicons/react/20/solid";
 import { useState } from "react";
 
-export default function CollectionPrefixForm({ id, className }: { id: string, className?: string }) {
+export default function CollectionPrefixForm({ id, className, initialItems }: { id: string, className?: string, initialItems?: string[] }) {
 	const [inputValue, setInputValue] = useState("");
-	const [prefixes, setPrefixes] = useState<string[]>([]);
+	const [prefixes, setPrefixes] = useState<string[]>(initialItems ?? []);
 
 	return (
 		<div className={className}>

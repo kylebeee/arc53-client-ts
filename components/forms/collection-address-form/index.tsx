@@ -8,13 +8,14 @@ export interface CollectionAddressFormProps {
 	id: string;
 	className?: string;
 	placeholder?: string;
+	initialItems?: string[];
 }
 
-export default function CollectionAddressForm({ id, className, placeholder = 'Add Addresses' }: CollectionAddressFormProps) {
+export default function CollectionAddressForm({ id, className, placeholder = 'Add Addresses', initialItems }: CollectionAddressFormProps) {
 	const {refs, floatingStyles} = useFloating({ placement: 'top-start' });
 
 	const [inputValue, setInputValue] = useState("");
-	const [addresses, setAddresses] = useState<string[]>([]);
+	const [addresses, setAddresses] = useState<string[]>(initialItems ?? []);
 
 	const [error, setError] = useState<string>('');
 

@@ -17,14 +17,17 @@ export interface ImageCIDFormProps {
     cidInputID: string;
     integrityInputID: string;
     mimeInputID: string;
+    initialCID?: string;
+    initialIntegrity?: string;
+    initialMime?: string;
 }
 
-export default function ImageCIDForm({ cidInputID, integrityInputID, mimeInputID }: ImageCIDFormProps) {
+export default function ImageCIDForm({ cidInputID, integrityInputID, mimeInputID, initialCID, initialIntegrity, initialMime }: ImageCIDFormProps) {
     const {refs, floatingStyles} = useFloating({ placement: 'top-start' });
-    
+
     const [error , setError] = useState<string>('');
-    const [integrity, setIntegrity] = useState<string>('');
-    const [mime, setMime] = useState<string>('');
+    const [integrity, setIntegrity] = useState<string>(initialIntegrity ?? '');
+    const [mime, setMime] = useState<string>(initialMime ?? '');
     
     return (
         <>
@@ -46,6 +49,7 @@ export default function ImageCIDForm({ cidInputID, integrityInputID, mimeInputID
                 className={cn(!!error ? 'border-red-600' : 'border-zinc-900 ', "border focus:border-zinc-900 bg-zinc-900 rounded-md w-full md:w-[40rem]")}
                 type="text"
                 placeholder="Image CID"
+                defaultValue={initialCID}
                 onChange={async (e) => {
                     const cid = e.target.value;
                     setError('');

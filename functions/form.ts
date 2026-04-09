@@ -1,4 +1,4 @@
-import { Associate, Collection, FAQ, Property, PropertyValue, Token } from "@/types";
+import { Arc53, Associate, Collection, Extra, FAQ, Property, PropertyValue, Token } from "@/types";
 import { FormInputID, getInputID } from "@/types/form";
 
 const getValueByID = (id: FormInputID, key: string) => (document.getElementById(getInputID(id, key)) as HTMLInputElement)?.value;
@@ -167,4 +167,32 @@ export function getFormExtraData(key: string): { key: string, value: string } | 
     if (!v) return null;
 
     return { key: k, value: v };
+}
+
+export function buildArc53Payload(
+    tokensList: string[],
+    teamMembersList: string[],
+    collectionsList: string[],
+    traitsMap: { [key: string]: string[] },
+    faqList: string[],
+    extrasList: string[],
+): Arc53 {
+    const payload: Arc53 = { version: '0.0.2' };
+
+    const tokens = tokensList.map(key => getFormTokenData(key)).filter(x => !!x);
+    if (tokens.length > 0) payload.tokens = tokens as Token[];
+
+    const teamMembers = teamMembersList.map(key => getFormTeamMemberData(key)).filter(x => !!x);
+    if (teamMembers.length > 0) payload.associates = teamMembers as Associate[];
+
+    const collections = collectionsList.map(key => getFormCollectionData(key, traitsMap)).filter(x => !!x);
+    if (collections.length > 0) payload.collections = collections as Collection[];
+
+    const faq = faqList.map(key => getFormFAQData(key)).filter(x => !!x);
+    if (faq.length > 0) payload.faq = faq as FAQ[];
+
+    const extras = extrasList.map(key => getFormExtraData(key)).filter(x => !!x);
+    if (extras.length > 0) payload.extras = extras as Extra[];
+
+    return payload;
 }

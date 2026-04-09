@@ -9,11 +9,12 @@ export interface CollectionTraitValueFormProps {
 	id: string;
 	traitKey: string;
 	className?: string;
+	initialItems?: string[];
 }
 
-export default function CollectionTraitValueForm({ id, traitKey, className }: CollectionTraitValueFormProps) {
+export default function CollectionTraitValueForm({ id, traitKey, className, initialItems }: CollectionTraitValueFormProps) {
 	const [inputValue, setInputValue] = useState("");
-	const [traitValues, setTraitValues] = useState<string[]>([]);
+	const [traitValues, setTraitValues] = useState<string[]>(initialItems ?? []);
 
 	return (
 		<div className={className}>

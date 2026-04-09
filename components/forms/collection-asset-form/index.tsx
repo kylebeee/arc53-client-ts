@@ -8,11 +8,12 @@ export interface CollectionAssetFormProps {
 	id: string;
 	className?: string;
 	placeholder?: string;
+	initialItems?: string[];
 }
 
-export default function CollectionAssetForm({ id, className, placeholder = "Add Assets" }: CollectionAssetFormProps) {
+export default function CollectionAssetForm({ id, className, placeholder = "Add Assets", initialItems }: CollectionAssetFormProps) {
 	const [inputValue, setInputValue] = useState("");
-	const [assets, setAssets] = useState<string[]>([]);
+	const [assets, setAssets] = useState<string[]>(initialItems ?? []);
 
 	return (
 		<div className={className}>
