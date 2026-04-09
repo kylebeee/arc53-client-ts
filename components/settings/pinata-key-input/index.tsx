@@ -15,44 +15,54 @@ export default function PinataKeyInput() {
     }
   }, [])
 
-  return (
-    <div className="flex items-center gap-2 mt-3">
-      <input
-        className="bg-zinc-900 border-zinc-700 focus:border-akita-purple rounded-md text-sm w-full"
-        type="password"
-        placeholder="Pinata JWT"
-        value={key}
-        onChange={e => {
-          setKey(e.target.value)
-          setSaved(false)
-        }}
-      />
-      {!saved ? (
+  if (saved) {
+    return (
+      <div className="flex items-center gap-1.5">
+        <span className="text-xs text-zinc-500">Pinata</span>
+        <span className="h-2 w-2 rounded-full bg-green-500" />
         <button
           type="button"
-          className="px-3 py-2 text-sm bg-akita-purple hover:bg-akita-purple-dark text-white rounded-md whitespace-nowrap transition-colors"
-          onClick={() => {
-            if (key.trim()) {
-              setPinataKey(key.trim())
-              setSaved(true)
-            }
-          }}
-        >
-          Save
-        </button>
-      ) : (
-        <button
-          type="button"
-          className="px-3 py-2 text-sm bg-zinc-900 hover:bg-red-600 text-white rounded-md whitespace-nowrap transition-colors"
+          className="text-xs text-zinc-500 hover:text-red-400 transition-colors"
           onClick={() => {
             clearPinataKey()
             setKey('')
             setSaved(false)
           }}
         >
-          Clear
+          clear
         </button>
-      )}
+      </div>
+    )
+  }
+
+  return (
+    <div className="flex items-center gap-1.5">
+      <input
+        className="bg-zinc-900 border-zinc-700 focus:border-akita-purple rounded-md text-sm py-1.5 w-40 md:w-48"
+        type="password"
+        placeholder="Pinata JWT"
+        value={key}
+        onChange={e => setKey(e.target.value)}
+        onKeyDown={e => {
+          if (e.key === 'Enter' && key.trim()) {
+            e.preventDefault()
+            setPinataKey(key.trim())
+            setSaved(true)
+          }
+        }}
+      />
+      <button
+        type="button"
+        className="px-2.5 py-1.5 text-sm bg-akita-purple hover:bg-akita-purple-dark text-white rounded-md transition-colors"
+        onClick={() => {
+          if (key.trim()) {
+            setPinataKey(key.trim())
+            setSaved(true)
+          }
+        }}
+      >
+        Save
+      </button>
     </div>
   )
 }

@@ -14,71 +14,35 @@ interface Arc53DataFormNavProps {
 export default function Arc53DataFormNav({ buildPayload }: Arc53DataFormNavProps) {
   const { state: formProgress, setState: setFormProgress } = useContext(FormDisplayContext);
 
+  const currentIndex = ARC53FormProgressOrder.findIndex(s => s === formProgress);
+
+  const goBack = () => setFormProgress(ARC53FormProgressOrder[currentIndex - 1]);
+  const goNext = () => setFormProgress(ARC53FormProgressOrder[currentIndex + 1]);
+
   return (
-    <div className="bg-black flex justify-end gap-2 pb-4">
-      {
-        (() => {
-          switch (formProgress) {
-            case ARC53FormProgress.token:
-              return (
-                <button
-                  className="block p-2 bg-akita-purple text-white rounded-md"
-                  type="button"
-                  onClick={() => {
-                    const nextStep = ARC53FormProgressOrder.findIndex((step: ARC53FormProgress) => step === formProgress) + 1;
-                    setFormProgress(ARC53FormProgressOrder[nextStep])
-                  }}
-                >
-                  Next
-                </button>
-              )
-            case ARC53FormProgress.associate:
-            case ARC53FormProgress.collection:
-            case ARC53FormProgress.faq:
-              return (
-                <>
-                  <button
-                    className="block p-2 bg-akita-purple text-white rounded-md"
-                    type="button"
-                    onClick={() => {
-                      const nextStep = ARC53FormProgressOrder.findIndex((step: ARC53FormProgress) => step === formProgress) - 1;
-                      setFormProgress(ARC53FormProgressOrder[nextStep])
-                    }}
-                  >
-                    Back
-                  </button>
-                  <button
-                    className="block p-2 bg-akita-purple text-white rounded-md"
-                    type="button"
-                    onClick={() => {
-                      const nextStep = ARC53FormProgressOrder.findIndex((step: ARC53FormProgress) => step === formProgress) + 1;
-                      setFormProgress(ARC53FormProgressOrder[nextStep])
-                    }}
-                  >
-                    Next
-                  </button>
-                </>
-              )
-            case ARC53FormProgress.extras:
-              return (
-                <div className="flex items-center gap-2">
-                  <button
-                    className="p-2 bg-akita-purple text-white rounded-md"
-                    type="button"
-                    onClick={() => {
-                      const nextStep = ARC53FormProgressOrder.findIndex((step: ARC53FormProgress) => step === formProgress) - 1;
-                      setFormProgress(ARC53FormProgressOrder[nextStep])
-                    }}
-                  >
-                    Back
-                  </button>
-                  <Arc53CreateFileButton />
-                  <NFDUpdateFlow buildPayload={buildPayload} />
-                </div>
-              )
-          }
-        })()
-      }
+    <div className="bg-black pb-4 pt-2">
+      {formProgress === ARC53FormProgress.extras ? (
+        <div className="space-y-4">
+          <div className="flex items-start gap-3">
+            <button className="p-2 bg-akita-purple text-white rounded-md" type="button" onClick={goBack}>
+              Back
+            </button>
+            <Arc53CreateFileButton />
+            <NFDUpdateFlow buildPayload={buildPayload} />
+          </div>
+        </div>
+      ) : (
+        <div className="flex justify-end gap-2">
+          {currentIndex > 0 && (
+            <button className="p-2 bg-akita-purple text-white rounded-md" type="button" onClick={goBack}>
+              Back
+            </button>
+          )}
+          <button className="p-2 bg-akita-purple text-white rounded-md" type="button" onClick={goNext}>
+            Next
+          </button>
+        </div>
+      )}
     </div>
   )
 }

@@ -6,9 +6,6 @@ import { useContext } from "react"
 import { Context as FormDisplayContext } from "@/providers/form-display"
 import { ARC53FormProgress } from "@/types/form"
 import { CheckIcon } from "@heroicons/react/20/solid"
-import ConnectButton from "@/components/wallet/connect-button"
-import NFDSelector from "@/components/wallet/nfd-selector"
-import PinataKeyInput from "@/components/settings/pinata-key-input"
 
 const steps = [
   {
@@ -43,14 +40,8 @@ export default function VerticalStepper({ className }: { className?: string }) {
   const stateIndex = steps.findIndex(step => step.id === formProgress);
 
   return (
-    <nav className={cn(!!className ? className : '', "h-full fixed max-w-80")} aria-label="Progress">
-      <h1 className="text-4xl font-extrabold">ARC53 BUILDER</h1>
-      <div className="mt-3 mb-4">
-        <ConnectButton />
-        <NFDSelector />
-        <PinataKeyInput />
-      </div>
-      <ol role="list" className="pt-2 overflow-hidden">
+    <nav className={cn(!!className ? className : '', "h-full fixed max-w-80 top-[61px] pt-6")} aria-label="Progress">
+      <ol role="list" className="overflow-hidden">
         {steps.map((step, stepIdx) => (
           <li key={step.name} className={cn(stepIdx !== steps.length - 1 ? 'pb-10' : '', 'relative')}>
             {stepIdx < stateIndex ? (

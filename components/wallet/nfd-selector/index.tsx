@@ -30,7 +30,6 @@ export default function NFDSelector() {
     fetchNFDsByAddress(activeAddress)
       .then(records => {
         setNfds(records)
-        // Auto-select if only one
         if (records.length === 1) {
           setSelectedNFD(records[0])
         }
@@ -56,29 +55,29 @@ export default function NFDSelector() {
   if (!activeAddress) return null
 
   if (loading) {
-    return <p className="text-sm text-zinc-400 mt-2">Loading NFDs...</p>
+    return <span className="text-sm text-zinc-400">Loading NFDs...</span>
   }
 
   if (error) {
-    return <p className="text-sm text-red-400 mt-2">{error}</p>
+    return <span className="text-sm text-red-400">{error}</span>
   }
 
   if (nfds.length === 0) {
-    return <p className="text-sm text-zinc-500 mt-2">No NFDs found for this address</p>
+    return <span className="text-sm text-zinc-500">No NFDs found</span>
   }
 
   return (
-    <div className="mt-2">
+    <div className="flex items-center gap-2">
       {nfds.length > 1 ? (
         <select
-          className="bg-zinc-900 border-zinc-700 text-white text-sm rounded-md w-full"
+          className="bg-zinc-900 border-zinc-700 text-white text-sm rounded-md py-1.5"
           value={selectedNFD?.name ?? ''}
           onChange={e => {
             const nfd = nfds.find(n => n.name === e.target.value)
             setSelectedNFD(nfd ?? null)
           }}
         >
-          <option value="">Select an NFD...</option>
+          <option value="">Select NFD...</option>
           {nfds.map(nfd => (
             <option key={nfd.name} value={nfd.name}>
               {nfd.name}
@@ -86,16 +85,11 @@ export default function NFDSelector() {
           ))}
         </select>
       ) : (
-        <p className="text-sm text-akita-purple font-medium">{selectedNFD?.name}</p>
+        <span className="text-sm text-akita-purple font-medium">{selectedNFD?.name}</span>
       )}
 
       {loadingArc53 && (
-        <p className="text-xs text-zinc-400 mt-1">Loading ARC53 data...</p>
-      )}
-      {selectedNFD && !loadingArc53 && (
-        <p className="text-xs text-zinc-500 mt-1">
-          {/* Indicate whether existing ARC53 data was found */}
-        </p>
+        <span className="text-xs text-zinc-400">Loading ARC53...</span>
       )}
     </div>
   )

@@ -10,6 +10,15 @@ import { Arc53 } from '@/types'
 
 type FlowStatus = 'idle' | 'uploading' | 'signing' | 'submitting' | 'success' | 'error'
 
+const STATUS_LABELS: Record<FlowStatus, string> = {
+  idle: 'Upload & Update NFD',
+  uploading: 'Uploading to IPFS...',
+  signing: 'Sign transaction...',
+  submitting: 'Submitting...',
+  success: '',
+  error: 'Retry',
+}
+
 export default function NFDUpdateFlow({ buildPayload }: { buildPayload: () => Arc53 }) {
   const { activeAddress, signTransactions, algodClient } = useWallet()
   const { selectedNFD } = useContext(Arc53DataContext)
@@ -20,28 +29,26 @@ export default function NFDUpdateFlow({ buildPayload }: { buildPayload: () => Ar
   const [cid, setCid] = useState<string | null>(null)
 
   const canUpload = !!activeAddress && !!selectedNFD && !!getPinataKey()
+  const isProcessing = status !== 'idle' && status !== 'error' && status !== 'success'
 
   async function handleUploadAndUpdate() {
     if (!activeAddress || !selectedNFD || !algodClient) return
 
     const pinataKey = getPinataKey()
     if (!pinataKey) {
-      setError('Pinata JWT not configured. Add it in the sidebar.')
+      setError('Pinata JWT not configured')
       setStatus('error')
       return
     }
 
     try {
-      // Step 1: Build payload
       const payload = buildPayload()
 
-      // Step 2: Upload to Pinata
       setStatus('uploading')
       setError(null)
       const ipfsHash = await uploadToPinata(pinataKey, payload)
       setCid(ipfsHash)
 
-      // Step 3: Build NFD update transaction
       setStatus('signing')
       const txns = await buildNFDUpdateTxns(
         selectedNFD.appID,
@@ -50,16 +57,13 @@ export default function NFDUpdateFlow({ buildPayload }: { buildPayload: () => Ar
         algodClient,
       )
 
-      // Step 4: Sign transaction
       const signedTxns = await signTransactions(txns)
 
-      // Step 5: Submit transaction
       setStatus('submitting')
       const validSignedTxns = signedTxns.filter((t): t is Uint8Array => t !== null)
       const { txid } = await algodClient.sendRawTransaction(validSignedTxns).do()
       setTxnId(txid)
 
-      // Wait for confirmation
       await algosdk.waitForConfirmation(algodClient, txid, 4)
 
       setStatus('success')
@@ -71,21 +75,18 @@ export default function NFDUpdateFlow({ buildPayload }: { buildPayload: () => Ar
 
   if (status === 'success') {
     return (
-      <div className="space-y-2">
-        <p className="text-sm text-green-400 font-medium">NFD updated successfully!</p>
-        {cid && (
-          <p className="text-xs text-zinc-400">
-            CID: <span className="font-mono">{cid}</span>
+      <div className="flex items-center gap-3 p-3 bg-zinc-900 rounded-lg">
+        <div className="h-2 w-2 rounded-full bg-green-500 shrink-0" />
+        <div className="text-sm">
+          <p className="text-green-400 font-medium">NFD updated</p>
+          <p className="text-xs text-zinc-500 font-mono mt-0.5">
+            {cid && <>CID: {cid.slice(0, 16)}... </>}
+            {txnId && <>Txn: {txnId.slice(0, 12)}...</>}
           </p>
-        )}
-        {txnId && (
-          <p className="text-xs text-zinc-400">
-            Txn: <span className="font-mono">{txnId.slice(0, 12)}...</span>
-          </p>
-        )}
+        </div>
         <button
           type="button"
-          className="px-3 py-1.5 text-sm bg-zinc-900 text-white rounded-md"
+          className="ml-auto px-2.5 py-1 text-xs bg-zinc-800 hover:bg-zinc-700 text-white rounded-md transition-colors"
           onClick={() => {
             setStatus('idle')
             setTxnId(null)
@@ -99,30 +100,28 @@ export default function NFDUpdateFlow({ buildPayload }: { buildPayload: () => Ar
   }
 
   return (
-    <div>
+    <div className="flex flex-col gap-1.5">
       <button
         type="button"
-        className="p-2 bg-akita-purple hover:bg-akita-purple-dark text-white rounded-md disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-        disabled={!canUpload || status !== 'idle'}
+        className="p-2 bg-akita-purple hover:bg-akita-purple-dark text-white rounded-md disabled:opacity-40 disabled:cursor-not-allowed transition-colors whitespace-nowrap"
+        disabled={!canUpload || isProcessing}
         onClick={handleUploadAndUpdate}
       >
-        {status === 'idle' && 'Upload & Update NFD'}
-        {status === 'uploading' && 'Uploading to IPFS...'}
-        {status === 'signing' && 'Sign transaction...'}
-        {status === 'submitting' && 'Submitting...'}
-        {status === 'error' && 'Retry'}
+        {STATUS_LABELS[status]}
       </button>
 
       {!canUpload && status === 'idle' && (
-        <p className="text-xs text-zinc-500 mt-1">
-          {!activeAddress && 'Connect wallet'}
-          {activeAddress && !selectedNFD && 'Select an NFD'}
-          {activeAddress && selectedNFD && !getPinataKey() && 'Add Pinata JWT'}
+        <p className="text-xs text-zinc-500">
+          Requires: {[
+            !activeAddress && 'wallet',
+            activeAddress && !selectedNFD && 'NFD',
+            activeAddress && selectedNFD && !getPinataKey() && 'Pinata JWT',
+          ].filter(Boolean).join(', ')}
         </p>
       )}
 
       {error && (
-        <p className="text-sm text-red-400 mt-2">{error}</p>
+        <p className="text-xs text-red-400">{error}</p>
       )}
     </div>
   )

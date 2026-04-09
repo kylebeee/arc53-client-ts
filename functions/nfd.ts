@@ -5,7 +5,7 @@ const NFD_API_BASE = 'https://api.nf.domains'
 
 export async function fetchNFDsByAddress(address: string): Promise<NFDRecord[]> {
   const res = await fetch(
-    `${NFD_API_BASE}/nfd/lookup?address=${address}&view=full`
+    `${NFD_API_BASE}/nfd/v2/search?owner=${address}&view=full&limit=50`
   )
 
   if (!res.ok) {
@@ -14,12 +14,7 @@ export async function fetchNFDsByAddress(address: string): Promise<NFDRecord[]> 
   }
 
   const data = await res.json()
-
-  // The lookup endpoint returns { [address]: NFDRecord[] }
-  const records = data[address]
-  if (!Array.isArray(records)) return []
-
-  return records
+  return data.nfds ?? []
 }
 
 export async function fetchArc53FromNFD(nfd: NFDRecord): Promise<Arc53 | null> {
