@@ -2,15 +2,15 @@
 
 import { useWallet } from '@txnlab/use-wallet-react'
 import { useContext, useEffect, useState } from 'react'
-import { NFDRecord } from '@/types/nfd'
-import { fetchNFDsByAddress, fetchArc53FromNFD } from '@/functions/nfd'
+import { Nfd } from '@txnlab/nfd-sdk'
+import { fetchNFDsForAddress, fetchArc53FromNFD } from '@/functions/nfd'
 import { Arc53DataContext } from '@/providers/arc53-data'
 
 export default function NFDSelector() {
   const { activeAddress } = useWallet()
   const { setArc53Data, selectedNFD, setSelectedNFD } = useContext(Arc53DataContext)
 
-  const [nfds, setNfds] = useState<NFDRecord[]>([])
+  const [nfds, setNfds] = useState<Nfd[]>([])
   const [loading, setLoading] = useState(false)
   const [loadingArc53, setLoadingArc53] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -27,7 +27,7 @@ export default function NFDSelector() {
     setLoading(true)
     setError(null)
 
-    fetchNFDsByAddress(activeAddress)
+    fetchNFDsForAddress(activeAddress)
       .then(records => {
         setNfds(records)
         if (records.length === 1) {

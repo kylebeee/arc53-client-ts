@@ -1,30 +1,49 @@
 import { Arc53 } from '@/types'
-import { NFDRecord } from '@/types/nfd'
+import { Nfd, NfdClient } from '@txnlab/nfd-sdk'
 
-const NFD_API_BASE = 'https://api.nf.domains'
+const nfdClient = NfdClient.mainNet()
 
-export async function fetchNFDsByAddress(address: string): Promise<NFDRecord[]> {
-  const res = await fetch(
-    `${NFD_API_BASE}/nfd/v2/search?owner=${address}&view=full&limit=50`
-  )
+export { nfdClient }
+export type { Nfd }
 
-  if (!res.ok) {
-    if (res.status === 404) return []
-    throw new Error(`NFD lookup failed: ${res.status}`)
+export async function fetchNFDsForAddress(address: string): Promise<Nfd[]> {
+  const results: Nfd[] = []
+  const seen = new Set<string>()
+
+  // Search by owner (NFDs the address directly owns)
+  try {
+    const owned = await nfdClient.searchByOwner(address, { view: 'full', limit: 50 })
+    for (const nfd of owned.nfds) {
+      if (!seen.has(nfd.name)) {
+        seen.add(nfd.name)
+        results.push(nfd)
+      }
+    }
+  } catch {
+    // No owned NFDs
   }
 
-  const data = await res.json()
-  return data.nfds ?? []
+  // Reverse lookup (NFDs where the address is verified/linked as primary)
+  try {
+    const primary = await nfdClient.resolveAddress(address, { view: 'full' })
+    if (primary && !seen.has(primary.name)) {
+      seen.add(primary.name)
+      results.push(primary)
+    }
+  } catch {
+    // No primary NFD for this address
+  }
+
+  return results
 }
 
-export async function fetchArc53FromNFD(nfd: NFDRecord): Promise<Arc53 | null> {
+export async function fetchArc53FromNFD(nfd: Nfd): Promise<Arc53 | null> {
   const arc53Value =
     nfd.properties?.verified?.['arc53'] ??
     nfd.properties?.userDefined?.['arc53']
 
   if (!arc53Value) return null
 
-  // If it's an IPFS URI, fetch the JSON
   if (arc53Value.startsWith('ipfs://')) {
     const cid = arc53Value.replace('ipfs://', '')
     const res = await fetch(`https://ipfs.algonode.xyz/ipfs/${cid}`)
@@ -32,7 +51,6 @@ export async function fetchArc53FromNFD(nfd: NFDRecord): Promise<Arc53 | null> {
     return res.json()
   }
 
-  // Try parsing as inline JSON
   try {
     return JSON.parse(arc53Value)
   } catch {
