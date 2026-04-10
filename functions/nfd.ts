@@ -54,7 +54,7 @@ export async function fetchArc53FromNFD(nfd: Nfd): Promise<Arc53 | null> {
 
   if (arc53Value.startsWith('ipfs://')) {
     const cid = arc53Value.replace('ipfs://', '')
-    const res = await fetch(`https://ipfs.algonode.xyz/ipfs/${cid}`)
+    const res = await fetch(`https://ipfs.akita.community/ipfs/${cid}`)
     if (!res.ok) return null
     return res.json()
   }

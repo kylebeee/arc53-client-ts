@@ -5,7 +5,7 @@ export interface IPFSMetaData {
 
 export async function getIPFSMetaData(url: string): Promise<IPFSMetaData> {
     url = url.replace('ipfs://', '');
-    const response = await fetch(`https://ipfs.algonode.xyz/ipfs/${url}`);
+    const response = await fetch(`https://ipfs.akita.community/ipfs/${url}`);
     const mime = response.headers.get('Content-Type')!;
 
     const fileBuffer = await response.arrayBuffer();
