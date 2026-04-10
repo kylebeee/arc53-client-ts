@@ -37,10 +37,18 @@ export async function fetchNFDsForAddress(address: string): Promise<Nfd[]> {
   return results
 }
 
+// ARC53 data can be stored under different keys depending on the era
+const ARC53_KEYS = ['project', 'akitacommunity'] as const
+
 export async function fetchArc53FromNFD(nfd: Nfd): Promise<Arc53 | null> {
-  const arc53Value =
-    nfd.properties?.verified?.['arc53'] ??
-    nfd.properties?.userDefined?.['arc53']
+  let arc53Value: string | undefined
+
+  for (const key of ARC53_KEYS) {
+    arc53Value =
+      nfd.properties?.verified?.[key] ??
+      nfd.properties?.userDefined?.[key]
+    if (arc53Value) break
+  }
 
   if (!arc53Value) return null
 

@@ -51,7 +51,7 @@ export default function NFDUpdateFlow({ buildPayload }: { buildPayload: () => Ar
       setStatus('signing')
       nfdClient.setSigner(activeAddress, transactionSigner)
       await nfdClient.manage(selectedNFD.name).setMetadata({
-        arc53: `ipfs://${ipfsHash}`,
+        project: `ipfs://${ipfsHash}`,
       })
 
       setStatus('success')
