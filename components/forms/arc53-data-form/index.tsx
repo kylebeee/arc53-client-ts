@@ -236,7 +236,7 @@ export default function Arc53DataForm() {
                                 placeholder="Trait Name"
                                 defaultValue={dvComposite(FormInputID.CollectionTraitName, `${traitKey}-${key}`)}
                               />
-                              <CollectionTraitValueForm id={key} traitKey={traitKey} className="w-full" initialItems={prefillState?.initialLists[key]?.traitValues?.[traitKey]} />
+                              <CollectionTraitValueForm id={key} traitKey={traitKey} className="w-full" initialItems={prefillState?.initialLists[key]?.traitValues?.[traitKey]} initialImageData={prefillState?.defaultValues} />
                             </div>
                           </div>
                         ))

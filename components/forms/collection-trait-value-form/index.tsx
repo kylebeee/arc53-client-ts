@@ -10,9 +10,10 @@ export interface CollectionTraitValueFormProps {
 	traitKey: string;
 	className?: string;
 	initialItems?: string[];
+	initialImageData?: Record<string, Record<string, string>>;
 }
 
-export default function CollectionTraitValueForm({ id, traitKey, className, initialItems }: CollectionTraitValueFormProps) {
+export default function CollectionTraitValueForm({ id, traitKey, className, initialItems, initialImageData }: CollectionTraitValueFormProps) {
 	const [inputValue, setInputValue] = useState("");
 	const [traitValues, setTraitValues] = useState<string[]>(initialItems ?? []);
 
@@ -63,6 +64,9 @@ export default function CollectionTraitValueForm({ id, traitKey, className, init
 									cidInputID={getInputID(FormInputID.CollectionTraitValueImage, `${traitValue}-${traitKey}-${id}`)}
 									integrityInputID={getInputID(FormInputID.CollectionTraitValueImageIntegrity, `${traitValue}-${traitKey}-${id}`)}
 									mimeInputID={getInputID(FormInputID.CollectionTraitValueImageMimeType, `${traitValue}-${traitKey}-${id}`)}
+									initialCID={initialImageData?.[`${traitValue}-${traitKey}-${id}`]?.[FormInputID.CollectionTraitValueImage]}
+									initialIntegrity={initialImageData?.[`${traitValue}-${traitKey}-${id}`]?.[FormInputID.CollectionTraitValueImageIntegrity]}
+									initialMime={initialImageData?.[`${traitValue}-${traitKey}-${id}`]?.[FormInputID.CollectionTraitValueImageMimeType]}
 								/>
 							</div>
 						</div>
