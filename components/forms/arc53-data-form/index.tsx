@@ -67,6 +67,10 @@ export default function Arc53DataForm() {
     return prefillState?.defaultValues[compositeKey]?.[inputId];
   }
 
+  const prefilled = !!prefillState;
+  const FieldLabel = ({ children }: { children: React.ReactNode }) =>
+    prefilled ? <span className="text-xs text-zinc-400 mb-1 block">{children}</span> : null;
+
   return (
     <form key={formKey} onSubmit={e => {
       e.preventDefault();
@@ -99,7 +103,10 @@ export default function Arc53DataForm() {
                 </div>
 
 
-                <input id={getInputID(FormInputID.TokenAssetID, key)} className="bg-zinc-900 border-zinc-900 focus:border-zinc-900 rounded-md" type="text" placeholder="Asset ID" defaultValue={dv(FormInputID.TokenAssetID, key)} />
+                <div className="flex flex-col">
+                  <FieldLabel>Asset ID</FieldLabel>
+                  <input id={getInputID(FormInputID.TokenAssetID, key)} className="bg-zinc-900 border-zinc-900 focus:border-zinc-900 rounded-md" type="text" placeholder="Asset ID" defaultValue={dv(FormInputID.TokenAssetID, key)} />
+                </div>
 
                 <ImageCIDForm
                   cidInputID={getInputID(FormInputID.TokenImage, key)}
@@ -108,6 +115,7 @@ export default function Arc53DataForm() {
                   initialCID={dv(FormInputID.TokenImage, key)}
                   initialIntegrity={dv(FormInputID.TokenImageIntegrity, key)}
                   initialMime={dv(FormInputID.TokenImageMimeType, key)}
+                  label={prefilled ? 'Image CID' : undefined}
                 />
 
               </div>
@@ -141,9 +149,15 @@ export default function Arc53DataForm() {
                   </button>
                 </div>
 
-                <input id={getInputID(FormInputID.TeamMemberRole, key)} className="bg-zinc-900 border-zinc-900 focus:border-zinc-900 rounded-md md:w-96" type="text" placeholder="Role" defaultValue={dv(FormInputID.TeamMemberRole, key)} />
+                <div className="flex flex-col">
+                  <FieldLabel>Role</FieldLabel>
+                  <input id={getInputID(FormInputID.TeamMemberRole, key)} className="bg-zinc-900 border-zinc-900 focus:border-zinc-900 rounded-md md:w-96" type="text" placeholder="Role" defaultValue={dv(FormInputID.TeamMemberRole, key)} />
+                </div>
 
-                <input id={getInputID(FormInputID.TeamMemberAddress, key)} className="bg-zinc-900 border-zinc-900 focus:border-zinc-900 rounded-md w-full md:w-[42rem] text-ellipsis overflow-hidden" type="text" placeholder="Address" defaultValue={dv(FormInputID.TeamMemberAddress, key)} />
+                <div className="flex flex-col w-full md:w-[42rem]">
+                  <FieldLabel>Address</FieldLabel>
+                  <input id={getInputID(FormInputID.TeamMemberAddress, key)} className="bg-zinc-900 border-zinc-900 focus:border-zinc-900 rounded-md w-full text-ellipsis overflow-hidden" type="text" placeholder="Address" defaultValue={dv(FormInputID.TeamMemberAddress, key)} />
+                </div>
 
               </div>
             ))
@@ -178,12 +192,24 @@ export default function Arc53DataForm() {
 
                 <div className="w-full flex flex-wrap my-4 gap-4">
 
-                  <input id={getInputID(FormInputID.CollectionName, key)} className="bg-zinc-900 border-zinc-900 focus:border-zinc-900 rounded-md md:w-80" type="text" placeholder="Name" defaultValue={dv(FormInputID.CollectionName, key)} />
+                  <div className="flex flex-col">
+                    <FieldLabel>Name</FieldLabel>
+                    <input id={getInputID(FormInputID.CollectionName, key)} className="bg-zinc-900 border-zinc-900 focus:border-zinc-900 rounded-md md:w-80" type="text" placeholder="Name" defaultValue={dv(FormInputID.CollectionName, key)} />
+                  </div>
 
-                  <input id={getInputID(FormInputID.CollectionBanner, key)} className="bg-zinc-900 border-zinc-900 focus:border-zinc-900 rounded-md" type="text" placeholder="Banner Asset ID" defaultValue={dv(FormInputID.CollectionBanner, key)} />
-                  <input id={getInputID(FormInputID.CollectionAvatar, key)} className="bg-zinc-900 border-zinc-900 focus:border-zinc-900 rounded-md" type="text" placeholder="Avatar Asset ID" defaultValue={dv(FormInputID.CollectionAvatar, key)} />
+                  <div className="flex flex-col">
+                    <FieldLabel>Banner Asset ID</FieldLabel>
+                    <input id={getInputID(FormInputID.CollectionBanner, key)} className="bg-zinc-900 border-zinc-900 focus:border-zinc-900 rounded-md" type="text" placeholder="Banner Asset ID" defaultValue={dv(FormInputID.CollectionBanner, key)} />
+                  </div>
+                  <div className="flex flex-col">
+                    <FieldLabel>Avatar Asset ID</FieldLabel>
+                    <input id={getInputID(FormInputID.CollectionAvatar, key)} className="bg-zinc-900 border-zinc-900 focus:border-zinc-900 rounded-md" type="text" placeholder="Avatar Asset ID" defaultValue={dv(FormInputID.CollectionAvatar, key)} />
+                  </div>
 
-                  <textarea id={getInputID(FormInputID.CollectionDescription, key)} className="bg-zinc-900 border-zinc-900 focus:border-zinc-900 rounded-md min-h-40 w-[47.5rem] 2xl:w-[60rem]" placeholder="Description" defaultValue={dv(FormInputID.CollectionDescription, key)} />
+                  <div className="flex flex-col w-[47.5rem] 2xl:w-[60rem]">
+                    <FieldLabel>Description</FieldLabel>
+                    <textarea id={getInputID(FormInputID.CollectionDescription, key)} className="bg-zinc-900 border-zinc-900 focus:border-zinc-900 rounded-md min-h-40 w-full" placeholder="Description" defaultValue={dv(FormInputID.CollectionDescription, key)} />
+                  </div>
 
                   <div className="w-full py-2 flex flex-col gap-4">
                     <h3 className="block">
@@ -229,13 +255,16 @@ export default function Arc53DataForm() {
                             </div>
 
                             <div className="w-full my-4 flex flex-col gap-2">
-                              <input
-                                id={getInputID(FormInputID.CollectionTraitName, `${traitKey}-${key}`)}
-                                className="bg-zinc-900 border-zinc-900 focus:border-zinc-900 rounded-md w-60"
-                                type="text"
-                                placeholder="Trait Name"
-                                defaultValue={dvComposite(FormInputID.CollectionTraitName, `${traitKey}-${key}`)}
-                              />
+                              <div className="flex flex-col">
+                                <FieldLabel>Trait Name</FieldLabel>
+                                <input
+                                  id={getInputID(FormInputID.CollectionTraitName, `${traitKey}-${key}`)}
+                                  className="bg-zinc-900 border-zinc-900 focus:border-zinc-900 rounded-md w-60"
+                                  type="text"
+                                  placeholder="Trait Name"
+                                  defaultValue={dvComposite(FormInputID.CollectionTraitName, `${traitKey}-${key}`)}
+                                />
+                              </div>
                               <CollectionTraitValueForm id={key} traitKey={traitKey} className="w-full" initialItems={prefillState?.initialLists[key]?.traitValues?.[traitKey]} initialImageData={prefillState?.defaultValues} />
                             </div>
                           </div>
@@ -283,8 +312,14 @@ export default function Arc53DataForm() {
                 </div>
 
                 <div className="w-full my-4 flex flex-col gap-4">
-                  <textarea id={getInputID(FormInputID.FAQQuestion, key)} className="w-full md:w-[30rem] bg-zinc-900 border-zinc-900 focus:border-zinc-900 rounded-md" placeholder="Question" defaultValue={dv(FormInputID.FAQQuestion, key)} />
-                  <textarea id={getInputID(FormInputID.FAQAnswer, key)} className="w-full bg-zinc-900 border-zinc-900 focus:border-zinc-900 rounded-md" placeholder="Answer" defaultValue={dv(FormInputID.FAQAnswer, key)} />
+                  <div className="flex flex-col w-full md:w-[30rem]">
+                    <FieldLabel>Question</FieldLabel>
+                    <textarea id={getInputID(FormInputID.FAQQuestion, key)} className="w-full bg-zinc-900 border-zinc-900 focus:border-zinc-900 rounded-md" placeholder="Question" defaultValue={dv(FormInputID.FAQQuestion, key)} />
+                  </div>
+                  <div className="flex flex-col w-full">
+                    <FieldLabel>Answer</FieldLabel>
+                    <textarea id={getInputID(FormInputID.FAQAnswer, key)} className="w-full bg-zinc-900 border-zinc-900 focus:border-zinc-900 rounded-md" placeholder="Answer" defaultValue={dv(FormInputID.FAQAnswer, key)} />
+                  </div>
                 </div>
 
               </div>
@@ -318,8 +353,14 @@ export default function Arc53DataForm() {
                 </div>
 
                 <div className="w-full my-4 flex flex-col gap-4">
-                  <input id={getInputID(FormInputID.ExtraKey, key)} className="bg-zinc-900 border-zinc-900 focus:border-zinc-900 rounded-md md:w-96" type="text" placeholder="Key" defaultValue={dv(FormInputID.ExtraKey, key)} />
-                  <textarea id={getInputID(FormInputID.ExtraValue, key)} className="w-full bg-zinc-900 border-zinc-900 focus:border-zinc-900 rounded-md" placeholder="Value" defaultValue={dv(FormInputID.ExtraValue, key)} />
+                  <div className="flex flex-col md:w-96">
+                    <FieldLabel>Key</FieldLabel>
+                    <input id={getInputID(FormInputID.ExtraKey, key)} className="bg-zinc-900 border-zinc-900 focus:border-zinc-900 rounded-md w-full" type="text" placeholder="Key" defaultValue={dv(FormInputID.ExtraKey, key)} />
+                  </div>
+                  <div className="flex flex-col w-full">
+                    <FieldLabel>Value</FieldLabel>
+                    <textarea id={getInputID(FormInputID.ExtraValue, key)} className="w-full bg-zinc-900 border-zinc-900 focus:border-zinc-900 rounded-md" placeholder="Value" defaultValue={dv(FormInputID.ExtraValue, key)} />
+                  </div>
                 </div>
               </div>
             ))

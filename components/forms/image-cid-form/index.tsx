@@ -20,9 +20,10 @@ export interface ImageCIDFormProps {
     initialCID?: string;
     initialIntegrity?: string;
     initialMime?: string;
+    label?: string;
 }
 
-export default function ImageCIDForm({ cidInputID, integrityInputID, mimeInputID, initialCID, initialIntegrity, initialMime }: ImageCIDFormProps) {
+export default function ImageCIDForm({ cidInputID, integrityInputID, mimeInputID, initialCID, initialIntegrity, initialMime, label }: ImageCIDFormProps) {
     const {refs, floatingStyles} = useFloating({ placement: 'top-start' });
 
     const [error , setError] = useState<string>('');
@@ -30,19 +31,23 @@ export default function ImageCIDForm({ cidInputID, integrityInputID, mimeInputID
     const [mime, setMime] = useState<string>(initialMime ?? '');
     
     return (
-        <>
+        <div className="flex flex-col">
             {
                 !!error &&
                 <div
                     ref={refs.setFloating}
-                    style={floatingStyles}                    
+                    style={floatingStyles}
                 >
                     <div className="bg-red-600 my-2 p-2 text-white rounded-lg shadow-md">
                         {error}
                     </div>
                 </div>
             }
-            
+
+            {!!label && (
+                <span className="text-xs text-zinc-400 mb-1">{label}</span>
+            )}
+
             <input
                 id={cidInputID}
                 ref={refs.setReference}
@@ -88,7 +93,6 @@ export default function ImageCIDForm({ cidInputID, integrityInputID, mimeInputID
                 onChange={() => {}}
                 value={mime}
             />
-        </>
-        
+        </div>
     );
 }
